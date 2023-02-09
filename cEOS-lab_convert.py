@@ -40,7 +40,7 @@ def generate_uuid(length=8):
     generate_uuid - generate a relatively short ID to use for config sessions
     '''
     alphabet = string.ascii_lowercase + string.digits
-    return ''.join(random.choices(alphabet, length=8))
+    return ''.join(random.choices(alphabet, length=length))
 
 
 def main():
@@ -62,17 +62,15 @@ def main():
             for line in data.split('\n'):
                 # MTU != 1500 breaks things in odd ways
                 if 'mtu' in line:
-                    spacing = ""
                     leading = len(line) - len(line.lstrip())
-                    spacing += " " * leading
-                    filtered.append(spacing + "mtu 1500")
+                    filtered.append( " " * leading + "mtu 1500")
 
                 # cEOS-lab is using Management0
                 elif 'Management1' in line:
                     filtered.append( line.replace('Management1','Management0') )
 
                 # BGP knobs that require real hardware
-                elif 'update wait-install' in line or 'update wait-for-convergence':
+                elif 'update wait-install' in line or 'update wait-for-convergence' in line:
                     pass
 
                 elif 'storm-control' in line:
